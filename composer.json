@@ -1,5 +1,6 @@
 {
     "name": "zero1/layout-xml-plus",
+    "description": "Intercept block html output with layout xml, removing the need to override templates in most cases.",
     "license": [
         "GPL-3.0-or-later"
     ],
