@@ -86,8 +86,6 @@ class AfterHtmlProccesor
      */
     public function process($block, $html)
     {
-        $this->debugEnabled = true;
-
         $nameInLayout = $block->getNameInLayout();
         
         $debugInfo = [
