@@ -201,6 +201,8 @@ example
 </referenceBlock>
 ```
 
+## XPath Cheat Sheet
+- select all labels with a class of 'swatch-option' `/root//label[contains(@class, 'swatch-option')]`
 
 ## Other Recommendations
 When it comes to stopping blocks outputting content, using layout xml can often remove the requirement to change the template.
