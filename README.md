@@ -160,6 +160,7 @@ Valid targets
 - `end`: at the end of the nodes content (after current children)
 - `before`: before the current node
 - `after`: after the current node
+- `replace`: replace the target node with the content of the block
 
 example
 `default.xml`
