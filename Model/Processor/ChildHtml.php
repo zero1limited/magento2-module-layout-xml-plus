@@ -10,6 +10,7 @@ class ChildHtml extends AbstractProcessor
     public const TARGET_BEFORE = 'before';
     public const TARGET_END = 'end';
     public const TARGET_AFTER = 'after';
+    public const TARGET_REPLACE = 'replace';
 
     /**
      * @param \DOMElement $node
@@ -73,6 +74,12 @@ class ChildHtml extends AbstractProcessor
                     );
                 }
                 break;
+            case self::TARGET_REPLACE:
+                $node->parentNode->insertBefore(
+                    $domNode,
+                    $node
+                );
+                $node->parentNode->removeChild($node);
             default:
                 throw new \InvalidArgumentException('Invalid target: "'.$target.'"');
         }
