@@ -218,6 +218,15 @@ do
 <referenceBlock name="product.review.form" display="false"></referenceBlock>
 ```
 
+## CLI Commands
+
+- Show module status: `php bin/magento dev:layout-xml-plus:status`
+- Disable module: `php bin/magento dev:layout-xml-plus:status --disable`
+- Enable module: `php bin/magento dev:layout-xml-plus:status --enable`
+- Show logging status: `php bin/magento dev:layout-xml-plus:logging`
+- Disable logging: `php bin/magento dev:layout-xml-plus:logging --disable`
+- Enable logging: `php bin/magento dev:layout-xml-plus:logging --enable`
+
 ## TODO
 - [ ] make debug flag setable/env'able
 - [ ] make play nice with hyva when prod mode

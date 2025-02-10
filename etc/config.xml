@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd"
+>
+    <default>
+        <dev>
+            <layout_xml_plus>
+                <enable>1</enable>
+                <enable_logging>0</enable_logging>
+            </layout_xml_plus>
+        </dev>
+    </default>
+</config>

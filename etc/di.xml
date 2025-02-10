@@ -1,16 +1,24 @@
-<?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name="Zero1\LayoutXmlPlus\Model\AfterHtmlProccesor">
-        <arguments>
-            <argument name="processorPool" xsi:type="array">
-                <item name="attribute_value_replace" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\AttributeValueReplace</item>
-                <item name="attribute_value_set" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\AttributeValueSet</item>
-                <item name="attribute_value_append" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\AttributeValueAppend</item>
-                <item name="attribute_value_remove" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\AttributeValueRemove</item>
-                <item name="attribute_remove" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\AttributeRemove</item>
-                <item name="child_html" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\ChildHtml</item>
-                <item name="remove" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\Remove</item>
-            </argument>
-        </arguments>
-    </type>
+<?xml version="1.0" encoding="utf-8"?>
+<config xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <type name="Zero1\LayoutXmlPlus\Model\AfterHtmlProccesor">
+    <arguments>
+      <argument name="processorPool" xsi:type="array">
+        <item name="attribute_value_replace" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\AttributeValueReplace</item>
+        <item name="attribute_value_set" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\AttributeValueSet</item>
+        <item name="attribute_value_append" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\AttributeValueAppend</item>
+        <item name="attribute_value_remove" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\AttributeValueRemove</item>
+        <item name="attribute_remove" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\AttributeRemove</item>
+        <item name="child_html" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\ChildHtml</item>
+        <item name="remove" xsi:type="object">Zero1\LayoutXmlPlus\Model\Processor\Remove</item>
+      </argument>
+    </arguments>
+  </type>
+  <type name="Magento\Framework\Console\CommandList">
+    <arguments>
+      <argument name="commands" xsi:type="array">
+        <item name="zero1_layoutxmlplus_command_statuscommand" xsi:type="object">Zero1\LayoutXmlPlus\Console\Command\StatusCommand</item>
+        <item name="zero1_layoutxmlplus_command_loggingcommand" xsi:type="object">Zero1\LayoutXmlPlus\Console\Command\LoggingCommand</item>
+      </argument>
+    </arguments>
+  </type>
 </config>

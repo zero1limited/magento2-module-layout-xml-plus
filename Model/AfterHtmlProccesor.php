@@ -5,6 +5,7 @@ use DOMDocument;
 use DOMXPath;
 use Psr\Log\LoggerInterface;
 use Zero1\LayoutXmlPlus\Model\Processor\Sanitizer;
+use Zero1\LayoutXmlPlus\Model\Config;
 
 class AfterHtmlProccesor
 {
@@ -17,18 +18,23 @@ class AfterHtmlProccesor
     /** @var array<\Zero1\LayoutXmlPlus\Model\ProcessorInterface> */
     protected $processorPool;
 
+    /** @var Config */
+    protected $config;
+
     protected $debugEnabled;
 
     public function __construct(
         Sanitizer $sanitizer,
         LoggerInterface $loggerInterface,
-        $processorPool = [],
-        $debugEnabled = false
+        Config $config,
+        $processorPool = []
     ){
         $this->sanitizer = $sanitizer;
         $this->logger = $loggerInterface;
+        $this->config = $config;
         $this->processorPool = $processorPool;
-        $this->debugEnabled = $debugEnabled;
+        
+        $this->debugEnabled = $this->config->isLoggingEnabled();
     }
 
     protected function sanitize($value)
@@ -66,7 +72,7 @@ class AfterHtmlProccesor
      */
     public function shouldProcess($block)
     {
-        return $block->hasData(self::DATA_KEY_ACTIONS);
+        return $block->hasData(self::DATA_KEY_ACTIONS) && $this->config->isEnabled();
     }
 
     protected function saveToFile($filename, $html)
