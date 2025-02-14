@@ -18,7 +18,10 @@
       <argument name="commands" xsi:type="array">
         <item name="zero1_layoutxmlplus_command_statuscommand" xsi:type="object">Zero1\LayoutXmlPlus\Console\Command\StatusCommand</item>
         <item name="zero1_layoutxmlplus_command_loggingcommand" xsi:type="object">Zero1\LayoutXmlPlus\Console\Command\LoggingCommand</item>
+        <item name="zero1_layoutxmlplus_command_analysecommand" xsi:type="object">Zero1\LayoutXmlPlus\Console\Command\AnalyseCommand</item>
+        <item name="zero1_layoutxmlplus_command_collectcommand" xsi:type="object">Zero1\LayoutXmlPlus\Console\Command\CollectCommand</item>
       </argument>
     </arguments>
   </type>
+  <type name="Zero1\LayoutXmlPlus\Observer\BlockAfterHtml" shared="false"></type>
 </config>
