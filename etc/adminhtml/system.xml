@@ -33,6 +33,17 @@
                     <label>Enable Logging</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                
+                <field id="collect_status"
+                        translate="label comment"
+                        type="select"
+                        sortOrder="20"
+                        showInDefault="1"
+                        canRestore="1"
+                >
+                    <label>Collect Status</label>
+                    <source_model>Zero1\LayoutXmlPlus\Model\Config\Source\CollectStatus</source_model>
+                </field>
             </group>
         </section>
     </system>

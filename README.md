@@ -227,6 +227,55 @@ do
 - Disable logging: `php bin/magento dev:layout-xml-plus:logging --disable`
 - Enable logging: `php bin/magento dev:layout-xml-plus:logging --enable`
 
+## Evaluation
+
+`php bin/magento dev:layout-xml-plus:collect (--with-theme|--without-theme|--disable) [--clear]`
+
+dev mode?
+`php bin/magento dev:layout-xml-plus:collect --with-theme --clear`
+browse site
+`php bin/magento dev:layout-xml-plus:collect --without-theme --clear`
+clear template files
+`rm -rf app/design/frontend/*/*/templates/*.pthml`
+browse site
+restore files
+`git checkout app/design/frontend`
+
+run analysise
+`php bin/magento dev:layout-xml-plus:analyse`
+
+html report?
+
 ## TODO
 - [ ] make debug flag setable/env'able
 - [ ] make play nice with hyva when prod mode
+
+
+
+
+
+
+
+
+```
+1 exception(s):
+Exception #0 (Magento\Framework\Exception\ValidatorException): Invalid template file: 'Magento_Cms::static-blocks/pagetop.phtml' in module: '' block's name: 'pagetop'
+```
+```
+git checkout app/design/frontend/z1/sds_hyva/Magento_Cms/templates/static-blocks/pagetop.phtml
+```
+
+magento@21843-php-fpm:~/htdocs$ git checkout app/design/frontend/z1/sds_hyva/Magento_Cms/templates/static-blocks/pagetop.phtml
+Updated 1 path from the index
+magento@21843-php-fpm:~/htdocs$ git checkout app/design/frontend/z1/sds_hyva/Magento_Theme/templates/html/header/menu/C-desktop.phtml
+Updated 1 path from the index
+magento@21843-php-fpm:~/htdocs$ git checkout app/design/frontend/z1/sds_hyva/Magento_Theme/templates/html/header/menu/C-desktop-item.phtml
+Updated 1 path from the index
+magento@21843-php-fpm:~/htdocs$ git checkout app/design/frontend/z1/sds_hyva/Magento_Cms/templates/static-blocks/usps.phtml
+Updated 1 path from the index
+magento@21843-php-fpm:~/htdocs$ git checkout app/design/frontend/z1/sds_hyva/Magento_Theme/templates/html/tradewidget.phtml
+Updated 1 path from the index
+
+
+git checkout app/design/frontend/z1/sds_hyva/Klaviyo_Reclaim/templates/product/viewed_hyva.phtml
+
