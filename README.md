@@ -5,9 +5,12 @@ For example, changing a single class for a button shouldn't require you to overr
 However for significant dom structure changes we would still recommend overriding the template.
 
 ## Installation
-composer require
-module enable
-setup:upgrade
+```
+composer require zero1/layout-xml-plus
+php bin/magento module:enable 
+php bin/magento setup:upgrade
+
+```
 
 ## Actions
 The functionality has been split into "actions" different actions that can be taken on the output of a blocks html before it is passed to a user.
@@ -245,6 +248,24 @@ run analysise
 `php bin/magento dev:layout-xml-plus:analyse`
 
 html report?
+
+
+
+## Testing XPath Values
+
+If you cannot find a suitable Browser extension to validate the best XPath selector values, you can use the following via console
+
+Run this once
+```
+var xpathExists = (xpath) => !!document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+```
+Then run this and if there is a matching XPath result it will return true
+```
+pathExists('//header/div//div[@class="flex gap-4 items-center"]/div[@class="relative hidden lg:inline-block mr-4"][1]/a')
+```
+Before moving this into your layout file be sure to prepend the XPath value with '/root'
+
+
 
 ## TODO
 - [ ] make debug flag setable/env'able
