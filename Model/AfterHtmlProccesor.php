@@ -6,6 +6,8 @@ use DOMXPath;
 use Psr\Log\LoggerInterface;
 use Zero1\LayoutXmlPlus\Model\Processor\Sanitizer;
 use Zero1\LayoutXmlPlus\Model\Config;
+use Magento\Framework\Filesystem\DirectoryList;
+use Magento\Framework\Filesystem\Io\File as IO;
 
 class AfterHtmlProccesor
 {
@@ -23,16 +25,26 @@ class AfterHtmlProccesor
 
     protected $debugEnabled;
 
+    /** @var DirectoryList */
+    protected $directoryList;
+
+    /** @var IO */
+    protected $io;
+
     public function __construct(
         Sanitizer $sanitizer,
         LoggerInterface $loggerInterface,
         Config $config,
+        DirectoryList $directoryList,
+        IO $io,
         $processorPool = []
     ){
         $this->sanitizer = $sanitizer;
         $this->logger = $loggerInterface;
         $this->config = $config;
         $this->processorPool = $processorPool;
+        $this->directoryList = $directoryList;
+        $this->io = $io;
         
         $this->debugEnabled = $this->config->isLoggingEnabled();
     }
@@ -75,14 +87,20 @@ class AfterHtmlProccesor
         return $block->hasData(self::DATA_KEY_ACTIONS) && $this->config->isEnabled();
     }
 
+    protected function baseDir()
+    {
+        $dir = $this->directoryList->getPath('var').'/layout-xml-plus/logging';
+        $this->io->checkAndCreateFolder($dir, 0775);
+        return $dir;
+    }
+
     protected function saveToFile($filename, $html)
     {
-        if(!is_dir('../var/layout-xml-plus')){
-            mkdir('../var/layout-xml-plus', 0777, true);
-        }
-        $filepath = '../var/layout-xml-plus/'.$filename;
-        file_put_contents($filepath, $html);
-        return $filepath;
+        $this->io->write(
+            $this->baseDir().'/'.$filename,
+            $html
+        );
+        return $this->baseDir().'/'.$filename;
     }
 
     /**
