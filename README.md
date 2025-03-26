@@ -223,32 +223,72 @@ do
 
 ## CLI Commands
 
+### Module Status
+Disabling the module is a quick way to debug if layout-xml is responsible for a change you are seeing.
 - Show module status: `php bin/magento dev:layout-xml-plus:status`
 - Disable module: `php bin/magento dev:layout-xml-plus:status --disable`
 - Enable module: `php bin/magento dev:layout-xml-plus:status --enable`
+
+### Logging
+Enabling logging will cause the module to log out all changes to output, as well as fails to change output (i.e when the xpath doesn't match anything in the content)
 - Show logging status: `php bin/magento dev:layout-xml-plus:logging`
 - Disable logging: `php bin/magento dev:layout-xml-plus:logging --disable`
 - Enable logging: `php bin/magento dev:layout-xml-plus:logging --enable`
 
-## Evaluation
+When enabled logging will output all blocks that have any layout-xml-plus directives into `var/layout-xml-plus/logging/*`
+Each block will be stored as:
+- `NAME_IN_LAYOUT.orig.html` - the original content of the block
+- `NAME_IN_LAYOUT.new.html` - the content after modification
 
-`php bin/magento dev:layout-xml-plus:collect (--with-theme|--without-theme|--disable) [--clear]`
 
-dev mode?
-`php bin/magento dev:layout-xml-plus:collect --with-theme --clear`
-browse site
-`php bin/magento dev:layout-xml-plus:collect --without-theme --clear`
-clear template files
-`rm -rf app/design/frontend/*/*/templates/*.pthml`
-browse site
-restore files
-`git checkout app/design/frontend`
+### Collection / Evaluation
+The module also includes as way to find template overides that can be replaced with layout xml directives.
 
-run analysise
-`php bin/magento dev:layout-xml-plus:analyse`
-
-html report?
-
+1. Magento setup
+  ``bash
+  php bin/magento deploy:mode:set developer \
+    && php bin/magento cache:enable \
+    && php bin/magento cache:flush
+  ```
+2. Enable collection (with theme)
+  ```bash
+  php bin/magento dev:layout-xml-plus:collect --with-theme --clear
+  ```
+3. Browse the site
+  Visit a set of pages, carry out a specific set of actions.
+  The order doesn't really matter but it's important you remember eaxtly what you did/do.
+4. Enable collection (without theme)
+  ```bash
+  php bin/magento dev:layout-xml-plus:collect --without-theme --clear \
+    && php bin/magento cache:flush
+  ```
+5. Clear out theme files
+  ```bash
+  rm -rf app/design/frontend/*/*/templates/*.pthml
+  ```
+6. Try to browse the site the same as you did in step 3.
+  If you hit errors, like "missing template file"
+  This will be for blocks that have been added by the theme and not included in Magento core.
+  Either remove their declaration from layout xml, or restore the template file. (`git checkout app/design/frontend/theme/path/to/file.phtml`)
+  Each time you hit an error you will need to re-run
+  ```bash
+  php bin/magento dev:layout-xml-plus:collect --without-theme --clear \
+    && php bin/magento cache:flush
+  ```
+  and browse the site again.
+7. Once you are happy that you have managed to browse the site without the theme files, disable collection
+  ```bash
+  php bin/magento dev:layout-xml-plus:collect --disable
+  ```
+  restore your theme
+  ```bash
+  git checkout app/design/frontend
+  ```
+8. Get the anlysis
+  ```bash
+  php bin/magento dev:layout-xml-plus:analyse
+  ```
+  This will output a report `pub/layout-xml-report.html` which (depending on your web server configuration) should be viewable in your web browser.
 
 
 ## Testing XPath Values
@@ -267,10 +307,18 @@ Before moving this into your layout file be sure to prepend the XPath value with
 
 
 
-## TODO
-- [ ] make debug flag setable/env'able
-- [ ] make play nice with hyva when prod mode
+## Roadmap
+- [x] make module disable-able
+- [x] make log flag setable/env'able
+- [x] record blocks and output, with/without theme
+- [ ] generate analysis report.
+- [ ] make play nice with hyva when prod mode (ccs classes)
+- [ ] unit tests
+- [ ] coding standards
+- [ ] initial release
 
+**Potentials**
+- [ ] profiler with autowarning when block takes excessive time?
 
 
 

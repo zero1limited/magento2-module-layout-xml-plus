@@ -62,9 +62,11 @@ class AfterHtmlProccesor
     /**
      * @return void
      */
-    protected function debug()
+    protected function debug($message, $context)
     {
-        return $this->debugEnabled;
+        if($this->debugEnabled){
+            $this->logger->debug($message, $context);
+        }
     }
 
     /**
@@ -116,7 +118,7 @@ class AfterHtmlProccesor
             'block_name' => $nameInLayout,
         ];
 
-        if($this->debug()){
+        if($this->debugEnabled){
             $filepath = $this->saveToFile($nameInLayout.'.orig.html', $html);
             $debugInfo['original_html'] = $filepath;
         }
@@ -135,9 +137,8 @@ class AfterHtmlProccesor
             $debugInfo['action_id'] = $actionId;
             $debugInfo['options'] = $options;
 
-            if($this->debug()){
-                $this->logger->debug('processing action', $debugInfo);
-            }
+            $this->debug('processing action', $debugInfo);
+
             if(!isset($options['xpath'])){
                 $this->logger->error('"xpath" missing from options', $debugInfo);
                 continue;
@@ -150,30 +151,23 @@ class AfterHtmlProccesor
             /** @var \DOMNodeList $nodes */
             $nodes = $xpath->query($options['xpath']);
             if(!$nodes || !$nodes->length){
-                if($this->debug()){
-                    $this->logger->debug('xpath matched no elements', $debugInfo);
-                }
+                $this->logger->warning('xpath matched no elements', $debugInfo);
                 continue;
             }
 
             $debugInfo['nodes_matched'] = $nodes->length;
-            if($this->debug()){
-                $this->logger->debug('xpath matched elements', $debugInfo);
-            }
+            $this->debug('xpath matched elements', $debugInfo);
 
             /** @var \DOMElement $node */
             foreach($nodes as $node){
                 try{
                     $processor = $this->getProcessor($options['action']);
-
                     $processor->process($node, $dom, $options, $block);
-
                 }catch(\InvalidArgumentException $e){
                     $debugInfo['error'] = $e->getMessage();
                     $this->logger->error('unable to process action', $debugInfo);
                 }
             }
-
         }
 
         $html = $xpath->document->saveHTML(
@@ -182,10 +176,10 @@ class AfterHtmlProccesor
         $html = str_replace(['<root>', '</root>'], '', $html);
         $html = $this->unsanitize($html);
 
-        if($this->debug()){
+        if($this->debugEnabled){
             $filepath = $this->saveToFile($nameInLayout.'.new.html', $html);
             $debugInfo['new_html'] = $filepath;
-            $this->logger->debug('finished processing', $debugInfo);
+            $this->debug('finished processing', $debugInfo);
         }
 
         return $html;
