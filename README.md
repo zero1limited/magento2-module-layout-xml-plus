@@ -264,7 +264,7 @@ The module also includes as way to find template overides that can be replaced w
   ```
 5. Clear out theme files
   ```bash
-  rm -rf app/design/frontend/*/*/templates/*.pthml
+  find ./app/design/frontend/ -type f -name '*.phtml' -exec rm "{}" \;
   ```
 6. Try to browse the site the same as you did in step 3.
   If you hit errors, like "missing template file"
@@ -276,6 +276,15 @@ The module also includes as way to find template overides that can be replaced w
     && php bin/magento cache:flush
   ```
   and browse the site again.
+  example error:
+    ```
+    1 exception(s):
+    Exception #0 (Magento\Framework\Exception\ValidatorException): Invalid template file: 'Magento_Cms::static-blocks/pagetop.phtml' in module: '' block's name: 'pagetop'
+    ```
+  example fix:
+    ```
+    git checkout app/design/frontend/VENDOR/THEME/Magento_Cms/templates/static-blocks/pagetop.phtml
+    ```
 7. Once you are happy that you have managed to browse the site without the theme files, disable collection
   ```bash
   php bin/magento dev:layout-xml-plus:collect --disable
@@ -324,27 +333,40 @@ Before moving this into your layout file be sure to prepend the XPath value with
 
 
 
+SDS testing
+
+https://www-sdslondon-co-uk-21843.54.mdoq.dev/
+https://www-sdslondon-co-uk-21843.54.mdoq.dev/british-made-bronze-door-knobs.html
+https://www-sdslondon-co-uk-21843.54.mdoq.dev/bronze-beehive-morticerim-door-knob-50-mm.html
+
+enable with theme
+php bin/magento deploy:mode:set developer \
+    && php bin/magento cache:enable \
+    && php bin/magento cache:flush \
+    && git checkout app/design/frontend \
+    && php bin/magento dev:layout-xml-plus:collect --with-theme --clear
+
+enabled without theme
+php bin/magento deploy:mode:set developer \
+    && php bin/magento cache:enable \
+    && php bin/magento cache:flush \
+    && php bin/magento dev:layout-xml-plus:collect --without-theme --clear  \
+    && find ./app/design/frontend/ -type f -name '*.phtml' -exec rm "{}" \; \
+    && git checkout app/design/frontend/z1/sds_hyva/Magento_Cms/templates/static-blocks/pagetop.phtml \
+    && git checkout app/design/frontend/z1/sds_hyva/Magento_Theme/templates/html/header/menu/C-desktop.phtml \
+    && git checkout app/design/frontend/z1/sds_hyva/Magento_Theme/templates/html/header/menu/C-desktop-item.phtml \
+    && git checkout app/design/frontend/z1/sds_hyva/Magento_Cms/templates/static-blocks/usps.phtml \
+    && git checkout app/design/frontend/z1/sds_hyva/Magento_Theme/templates/html/tradewidget.phtml \
+    && git checkout app/design/frontend/z1/sds_hyva/Klaviyo_Reclaim/templates/product/viewed_hyva.phtml \
+    && git checkout app/design/frontend/z1/sds_hyva/Hyva_Checkout/templates/section/custom-summary-header.phtml
+
+disable
+php bin/magento deploy:mode:set developer \
+    && php bin/magento cache:enable \
+    && php bin/magento cache:flush \
+    && git checkout app/design/frontend \
+    && php bin/magento dev:layout-xml-plus:collect --disable
 
 
-```
-1 exception(s):
-Exception #0 (Magento\Framework\Exception\ValidatorException): Invalid template file: 'Magento_Cms::static-blocks/pagetop.phtml' in module: '' block's name: 'pagetop'
-```
-```
-git checkout app/design/frontend/z1/sds_hyva/Magento_Cms/templates/static-blocks/pagetop.phtml
-```
-
-magento@21843-php-fpm:~/htdocs$ git checkout app/design/frontend/z1/sds_hyva/Magento_Cms/templates/static-blocks/pagetop.phtml
-Updated 1 path from the index
-magento@21843-php-fpm:~/htdocs$ git checkout app/design/frontend/z1/sds_hyva/Magento_Theme/templates/html/header/menu/C-desktop.phtml
-Updated 1 path from the index
-magento@21843-php-fpm:~/htdocs$ git checkout app/design/frontend/z1/sds_hyva/Magento_Theme/templates/html/header/menu/C-desktop-item.phtml
-Updated 1 path from the index
-magento@21843-php-fpm:~/htdocs$ git checkout app/design/frontend/z1/sds_hyva/Magento_Cms/templates/static-blocks/usps.phtml
-Updated 1 path from the index
-magento@21843-php-fpm:~/htdocs$ git checkout app/design/frontend/z1/sds_hyva/Magento_Theme/templates/html/tradewidget.phtml
-Updated 1 path from the index
-
-
-git checkout app/design/frontend/z1/sds_hyva/Klaviyo_Reclaim/templates/product/viewed_hyva.phtml
-
+Analyze
+php bin/magento dev:layout-xml-plus:analyse

@@ -82,9 +82,8 @@ class AnalyseCommand extends Command
         ]);
 
         $template = $mustache->loadTemplate('report');
-        echo $template->render($analysis).PHP_EOL;
 
-        file_put_contents('pub/foo.html', $template->render($analysis));
+        file_put_contents('pub/layout-xml-report.html', $template->render($analysis));
 
         return 0;
     }
