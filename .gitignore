@@ -1,3 +1,5 @@
 var
 .idea
 .DS_STORE
+.phpunit*
+vendor

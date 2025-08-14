@@ -125,7 +125,11 @@ class AfterHtmlProccesor
 
         libxml_use_internal_errors(true);
         $dom = new DOMDocument();
-        $htmlToUse = '<root>'.$html.'</root>';
+        $contentTypeMeta = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
+        $htmlToUse = '<root>'
+            .$contentTypeMeta
+            .$html
+            .'</root>';
         $htmlToUse = $this->sanitize($htmlToUse);
         $dom->loadHTML($htmlToUse, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         libxml_clear_errors();
@@ -173,7 +177,7 @@ class AfterHtmlProccesor
         $html = $xpath->document->saveHTML(
             $xpath->document->getElementsByTagName('root')[0]
         );
-        $html = str_replace(['<root>', '</root>'], '', $html);
+        $html = str_replace(['<root>', '</root>', $contentTypeMeta], '', $html);
         $html = $this->unsanitize($html);
 
         if($this->debugEnabled){

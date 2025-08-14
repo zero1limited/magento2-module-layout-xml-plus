@@ -1,6 +1,7 @@
 {
     "name": "zero1/layout-xml-plus",
     "description": "Intercept block html output with layout xml, removing the need to override templates in most cases.",
+    "type": "magento2-module",
     "license": [
         "GPL-3.0-or-later"
     ],
@@ -10,15 +11,34 @@
     },
     "autoload": {
         "files": [
-            "registration.php"
+            "src/registration.php"
         ],
         "psr-4": {
-            "Zero1\\LayoutXmlPlus\\": ""
+            "Zero1\\LayoutXmlPlus\\": "src/"
+        }
+    },
+    "repositories": {
+        "magento": {
+            "type": "composer",
+            "url": "https://repo.magento.com/"
         }
     },
     "keywords": [
         "Magento 2",
         "Magento",
         "Zero1_LayoutXmlPlus"
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Zero1\\LayoutXmlPlus\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "magento/composer-dependency-version-audit-plugin": false
+        }
+    }
 }
