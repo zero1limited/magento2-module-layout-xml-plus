@@ -1,7 +1,9 @@
 <?php
 namespace Zero1\LayoutXmlPlus\Model\Processor;
 
-class Remove
+use Zero1\LayoutXmlPlus\Model\AbstractProcessor;
+
+class Remove extends AbstractProcessor
 {
     /**
      * @param \DOMElement $node
