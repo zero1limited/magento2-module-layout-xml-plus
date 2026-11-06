@@ -26,15 +26,17 @@ class AttributeValueRemove extends AbstractProcessor
         if(!is_array($value)){
             $value = [$value];
         }
-        foreach($value as $v){
-            $node->setAttribute(
-                $attribute,
-                str_replace($v, '', $node->getAttribute($attribute))
-            );
-        }
+        // Remove whole whitespace separated tokens only, so removing "p-4" leaves "md:p-4" / "group-p-4" intact.
+        $remove = array_map(function ($v) {
+            return $this->sanitize((string)$v);
+        }, $value);
+        $tokens = preg_split('/\s+/', trim((string)$node->getAttribute($attribute)), -1, PREG_SPLIT_NO_EMPTY);
+        $tokens = array_filter($tokens, function ($token) use ($remove) {
+            return !in_array($token, $remove, true);
+        });
         $node->setAttribute(
             $attribute,
-            trim(str_replace('  ', ' ', $node->getAttribute($attribute)))
+            implode(' ', $tokens)
         );
     }
 }

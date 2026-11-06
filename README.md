@@ -18,10 +18,17 @@ The functionality has been split into "actions" different actions that can be ta
 **Common Parameters**
 - `action`: id of the action you wish to carry out
 - `xpath`: an xpath expressing to identify elements within the template. For compatibilty all templates are rendered inside a `<root>` node, so if you wanted the first div you would want something like `(/root/div)[1]` or 2nd div: `(/root/div)[2]` or all divs `/root//div`.
+- `optional` (boolean, default `false`): set to `true` when the targeted markup is legitimately not always present (e.g. conditional output). An optional action that matches nothing is only logged when logging is enabled, instead of logging a warning.
+
+**Tip:** to match a single class reliably use `contains(concat(' ', normalize-space(@class), ' '), ' my-class ')` rather than `contains(@class, 'my-class')`, which also matches `md:my-class`.
+
+**Inline scripts and styles** (`<script>`, `<style>`) are protected while the html is parsed and are output byte-for-byte, so blocks containing inline JS can safely be targeted.
 
 ### AttributeValueReplace
 id: `attribute_value_replace`
 Replace a value within an attributes value, a good example would be replacing a class with another class.
+
+**N.B.** this is a plain string replacement within the attribute value, so `search` = `py-8` also matches inside `md:py-8`. To swap a single class use `attribute_value_remove` + `attribute_value_append`, or `attribute_value_set` for the complete value.
 
 example
 `catalog_category_view.xml`
@@ -107,7 +114,7 @@ example
 
 ### AttributeValueRemove
 id: `attribute_value_remove`
-Remove a value from an attributes list of values
+Remove a value from an attributes list of values. Only whole (whitespace separated) values are removed, so removing `p-4` leaves `md:p-4` untouched.
 
 example
 `catalog_product_view.xml`
@@ -235,6 +242,7 @@ Enabling logging will cause the module to log out all changes to output, as well
 - Disable logging: `php bin/magento dev:layout-xml-plus:logging --disable`
 - Enable logging: `php bin/magento dev:layout-xml-plus:logging --enable`
 
+Logging is disabled by default and only active while the module itself is enabled.
 When enabled logging will output all blocks that have any layout-xml-plus directives into `var/layout-xml-plus/logging/*`
 Each block will be stored as:
 - `NAME_IN_LAYOUT.orig.html` - the original content of the block

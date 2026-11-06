@@ -5,6 +5,7 @@ use DOMDocument;
 use DOMXPath;
 use Psr\Log\LoggerInterface;
 use Zero1\LayoutXmlPlus\Model\Processor\Sanitizer;
+use Zero1\LayoutXmlPlus\Model\Processor\ScriptMasker;
 use Zero1\LayoutXmlPlus\Model\Config;
 use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\Filesystem\Io\File as IO;
@@ -31,13 +32,17 @@ class AfterHtmlProccesor
     /** @var IO */
     protected $io;
 
+    /** @var ScriptMasker */
+    protected $scriptMasker;
+
     public function __construct(
         Sanitizer $sanitizer,
         LoggerInterface $loggerInterface,
         Config $config,
         DirectoryList $directoryList,
         IO $io,
-        $processorPool = []
+        $processorPool = [],
+        ?ScriptMasker $scriptMasker = null
     ){
         $this->sanitizer = $sanitizer;
         $this->logger = $loggerInterface;
@@ -45,6 +50,7 @@ class AfterHtmlProccesor
         $this->processorPool = $processorPool;
         $this->directoryList = $directoryList;
         $this->io = $io;
+        $this->scriptMasker = $scriptMasker ?? new ScriptMasker();
         
         $this->debugEnabled = $this->config->isLoggingEnabled();
     }
@@ -126,9 +132,10 @@ class AfterHtmlProccesor
         libxml_use_internal_errors(true);
         $dom = new DOMDocument();
         $contentTypeMeta = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
+        // Mask <script>/<style> bodies: libxml would otherwise corrupt any "</tag" sequence inside them.
         $htmlToUse = '<root>'
             .$contentTypeMeta
-            .$html
+            .$this->scriptMasker->mask($html)
             .'</root>';
         $htmlToUse = $this->sanitize($htmlToUse);
         $dom->loadHTML($htmlToUse, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
@@ -155,7 +162,12 @@ class AfterHtmlProccesor
             /** @var \DOMNodeList $nodes */
             $nodes = $xpath->query($options['xpath']);
             if(!$nodes || !$nodes->length){
-                $this->logger->warning('xpath matched no elements', $debugInfo);
+                // "optional" actions target markup that legitimately isn't always present (e.g. conditional output).
+                if(!empty($options['optional'])){
+                    $this->debug('xpath matched no elements (optional action)', $debugInfo);
+                }else{
+                    $this->logger->warning('xpath matched no elements', $debugInfo);
+                }
                 continue;
             }
 
@@ -179,6 +191,7 @@ class AfterHtmlProccesor
         );
         $html = str_replace(['<root>', '</root>', $contentTypeMeta], '', $html);
         $html = $this->unsanitize($html);
+        $html = $this->scriptMasker->unmask($html);
 
         if($this->debugEnabled){
             $filepath = $this->saveToFile($nameInLayout.'.new.html', $html);

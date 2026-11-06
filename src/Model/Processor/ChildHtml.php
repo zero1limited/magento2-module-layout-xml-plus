@@ -6,6 +6,21 @@ use Zero1\LayoutXmlPlus\Model\AbstractProcessor;
 
 class ChildHtml extends AbstractProcessor
 {
+    /** @var ScriptMasker */
+    protected $scriptMasker;
+
+    /**
+     * @param Sanitizer $sanitizer
+     * @param ScriptMasker|null $scriptMasker
+     */
+    public function __construct(
+        Sanitizer $sanitizer,
+        ?ScriptMasker $scriptMasker = null
+    ) {
+        parent::__construct($sanitizer);
+        $this->scriptMasker = $scriptMasker ?? new ScriptMasker();
+    }
+
     public const TARGET_START = 'start';
     public const TARGET_BEFORE = 'before';
     public const TARGET_END = 'end';
@@ -39,10 +54,32 @@ class ChildHtml extends AbstractProcessor
             return;
         }
 
-        $childHtml = $this->sanitize($childHtml);
+        // Parse the child html the same way as the parent output: masked <script>/<style> bodies (restored by the
+        // parent's final unmask), an explicit utf-8 charset (no mojibake) and a <root> wrapper so ALL top level nodes,
+        // including bare text, are kept - not just the first element.
+        $contentTypeMeta = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
+        $childHtml = $this->sanitize(
+            '<root>' . $contentTypeMeta . $this->scriptMasker->mask($childHtml) . '</root>'
+        );
         $childDom = new DOMDocument();
+        $previous = libxml_use_internal_errors(true);
         $childDom->loadHTML($childHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        $domNode = $dom->importNode($childDom->documentElement, true);
+        libxml_clear_errors();
+        libxml_use_internal_errors($previous);
+
+        $domNode = $dom->createDocumentFragment();
+        $childRoot = $childDom->getElementsByTagName('root')->item(0);
+        foreach ($childRoot ? iterator_to_array($childRoot->childNodes) : [] as $childNode) {
+            if ($childNode instanceof \DOMElement && strtolower($childNode->nodeName) === 'meta'
+                && $childNode->getAttribute('http-equiv')
+            ) {
+                continue;
+            }
+            $domNode->appendChild($dom->importNode($childNode, true));
+        }
+        if (!$domNode->hasChildNodes()) {
+            return;
+        }
 
         switch($target){
             case self::TARGET_START:
@@ -80,6 +117,7 @@ class ChildHtml extends AbstractProcessor
                     $node
                 );
                 $node->parentNode->removeChild($node);
+                break;
             default:
                 throw new \InvalidArgumentException('Invalid target: "'.$target.'"');
         }

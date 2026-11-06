@@ -48,7 +48,7 @@ class Config
 
     public function isLoggingEnabled(): bool
     {
-        return $this->getStatus() == true;
+        return $this->getStatus() && $this->getLoggingStatus();
     }
 
     public function setLoggingStatus($status): void
